@@ -1,7 +1,18 @@
 <script>
 	import Header from './UI/Header.svelte';
 	import MeetupGrid from './Meetups/MeetupGrid.svelte';
-	const meetups = [
+	import TextInput from './UI/TextInput.svelte';
+	import Button from './UI/Button.svelte';
+
+
+	let title = '';
+	let subtitle = '';
+	let address = '';
+	let email = '';
+	let description = '';
+	let imageUrl =  '';
+	
+	let meetups = [
 		{
 			id: 'm1',
 			title: 'Coding Bootcamp',
@@ -21,6 +32,24 @@
 			address: 'Huntsville, AL 37752'
 		}
 	];
+
+	function addMeetup() {
+		let newMeetup = {
+			id: Math.random().toString(),
+			title: title,
+			subtitle: subtitle,
+			description: description,
+			imageUrl: imageUrl,
+			contactEmail: email,
+			address: address
+		};
+
+		// meetups.push(newMeetup) DOES NOT WORK! khong the cap nhat DOM
+
+		console.log(newMeetup);
+
+		meetups = [newMeetup, ...meetups];
+	} 
 </script>
 <style>
 	main {
@@ -31,12 +60,101 @@
 <Header />
 
 <main>
-	<form>
-		<div class="form-control">
-			<label for="title"></label>
-			<input type="text" id="title">
-		</div>
+	<form on:submit|preventDefault="{addMeetup}">
+		<!-- <div class="form-control">
+			<label for="title">Title: </label>
+			<input type="text" id="title" bind:value="{title}">
+		</div> -->
 
+		<TextInput 
+			id="title" 
+			label="Title"
+			value="{title}"
+			on:input={(event) => {
+				console.log(event.target.value);
+				title = event.target.value;
+			}}
+		/>
+
+		<!-- <div class="form-control">
+			<label for="subtitle">Subtitle: </label>
+			<input type="text" id="subtitle" bind:value="{subtitle}">
+		</div> -->
+
+		<TextInput 
+			id="subtitle" 
+			label="Subtitle"
+			value="{subtitle}"
+			on:input={(event) => {
+				console.log(event.target.value);
+				subtitle = event.target.value;
+			}}
+		/>
+
+		<!-- <div class="form-control">
+			<label for="address">Address: </label>
+			<input type="text" id="address" bind:value="{address}">
+		</div> -->
+
+		<TextInput 
+			id="address" 
+			label="Address"
+			value="{address}"
+			on:input={(event) => {
+				console.log(event.target.value);
+				address = event.target.value;
+			}}
+		/>
+
+		<!-- <div class="form-control">
+			<label for="imageUrl">Image URL: </label>
+			<input type="text" id="imageUrl" bind:value="{imageUrl}">
+		</div> -->
+
+		<TextInput 
+			id="imageUrl" 
+			label="Image URL"
+			value="{imageUrl}"
+			on:input={(event) => {
+				console.log(event.target.value);
+				imageUrl = event.target.value;
+			}}
+		/>
+
+		<!-- <div class="form-control">
+			<label for="email">Email: </label>
+			<input type="text" id="email" bind:value="{email}">
+		</div> -->
+
+		<TextInput 
+			id="email" 
+			label="Email"
+			value="{email}"
+			on:input={(event) => {
+				console.log(event.target.value);
+				email = event.target.value;
+			}}
+		/>
+
+		<!-- <div class="form-control">
+			<label for="description">Description: </label>
+			<textarea rows="3" id="description" bind:value="{description}"></textarea>
+		</div> -->
+
+		<TextInput 
+			id="description" 
+			label="Description"
+			value="{description}"
+			controlType="textarea"
+			on:input={(event) => {
+				console.log(event.target.value);
+				description = event.target.value;
+			}}
+		/>
+
+		<!-- <button type="submit">Save</button> -->
+
+		<Button type="submit" caption="Save" />
 	</form>
 	<MeetupGrid meetups={meetups}/>
 </main>

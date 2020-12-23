@@ -18,5 +18,5 @@
 	}
 </style>
 <header>
-	<h1>Quan's Meetup Applicationude</h1>
+	<h1>Quan's Meetup Application</h1>
 </header>
