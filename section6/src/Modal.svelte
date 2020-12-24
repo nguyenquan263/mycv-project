@@ -1,9 +1,39 @@
 <script>
-  import {createEventDispatcher} from 'svelte';
+  import {createEventDispatcher, 
+      onMount, 
+      onDestroy,
+      beforeUpdate,
+      afterUpdate} from 'svelte';
  
   // export let content;
 
   let dispatch = new createEventDispatcher();
+  let argreed = false;
+  let autoscroll = false;
+
+  console.log("scripting");
+
+  onMount(() => {
+    console.log("on mount!");
+  });
+
+  onDestroy(function() {
+    console.log("on destroy!");
+  });
+
+  beforeUpdate(() => {
+    console.log("be4 update");
+    autoscroll = argreed;
+  });
+
+  afterUpdate(function() {
+    console.log("after update");
+
+    if (autoscroll) {
+      const modal = document.querySelector(".modal");
+      modal.scrollTo(0, modal.scrollHeight);
+    }
+  });
 </script>
 
 <style>
@@ -23,7 +53,7 @@
   top: 10vh;
   left: 10%;
   width: 80%;
-  max-height: 80vh;
+  max-height: 15vh;
   background: white;
   border-radius: 5px;
   z-index: 100;
@@ -53,12 +83,14 @@ header {
 
   <div class="disclaimer">
     <p>Before you close, you need to argree to our term!</p>
-    <button>Argree</button>
+    <button on:click="{() => {argreed = true}}">Argree</button>
   </div>
 
   <footer>
-    <slot name="footer">
-      <button on:click="{() => dispatch('close')}">Close</button>
+    <slot name="footer" didArgree={argreed}>
+      <button 
+        on:click="{() => dispatch('close')}" 
+        disabled={!argreed}>Close</button>
     </slot>
   </footer>
  

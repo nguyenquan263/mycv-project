@@ -1,4 +1,5 @@
 <script>
+	import { tick, afterUpdate} from 'svelte';
 	import Modal from './Modal.svelte';
 	import Product from './Product.svelte';
 
@@ -29,6 +30,39 @@
 	}
 
 	let showModal = false;
+	let closable = false;
+
+	let text = 'this is dummy text';
+
+	function transform(event) {
+
+		console.log("haha");
+		if (event.which !== 9) {
+			return;
+		}
+
+		event.preventDefault();
+		const selectionStart = event.target.selectionStart;
+		const selectionEnd = event.target.selectionEnd;
+		const value = event.target.value;
+
+		text = value.slice(0, selectionStart) + 
+			value.slice(selectionStart, selectionEnd).toUpperCase() +
+			value.slice(selectionEnd);
+
+		//wait for event update :D
+		tick().then(function() {
+			event.target.selectionStart = selectionStart;
+			event.target.selectionEnd = selectionEnd;
+		});
+		
+	}
+	// not work!!!
+	// afterUpdate(function() {
+	// 	event.target.selectionStart = selectionStart;
+	// 	event.target.selectionEnd = selectionEnd;
+	// });
+
 </script>
 
 <!-- title="{product.title}"
@@ -50,9 +84,14 @@ use to pass arguments to subcomponent
 <!-- <Modal content="<h1>Hi</h1>"/> -->
 <Modal 
 	on:cancel="{() => showModal = false}"
-	on:close="{() => showModal = false}">
+	on:close="{() => showModal = false}"
+	let:didArgree={closable}>
 	<h1 slot="header">Hello!</h1>
 	<h3>This work!</h3>
-	<button slot="footer" on:click="{() => showModal = false}">Confirm</button>
+	<button slot="footer" 
+		on:click="{() => showModal = false}" 
+		disabled={!closable}>Confirm</button>
 </Modal>
 {/if}
+<br>
+<textarea rows="5" value={text} on:keydown={transform}></textarea>
