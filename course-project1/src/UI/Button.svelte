@@ -1,8 +1,9 @@
 <script>
-    export let type = "";
+    export let type = "button";
     export let caption = "";
-    export let href = "";
-
+    export let href = null;
+    export let mode = null;
+    export let color = null;
 
 </script>
 
@@ -86,7 +87,11 @@ button:disabled:active {
 </style>
 
 {#if href}
-    <a href="{href}">{caption}</a>
+    <a href="{href}"><slot /></a>
 {:else}
-    <button type="{type}">{caption}</button>
+    <button 
+      class="{mode} {color}" 
+      type="{type}"
+      on:click
+      ><slot /></button>
 {/if}
