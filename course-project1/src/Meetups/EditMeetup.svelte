@@ -5,15 +5,38 @@
     import TextInput from '../UI/TextInput.svelte';
     import Button from '../UI/Button.svelte';
     import Modal from '../UI/Modal.svelte';
+    import {isEmpty, isValidEmail} from '../helpers/validation';
 
     let title = '';
-	let subtitle = '';
-	let address = '';
-	let email = '';
-	let description = '';
+    let titleValid = false;
+    let subtitle = '';
+    let subtitleValid = false;
+    let address = '';
+    let addressValid = false;
+    let email = '';
+    let emailValid = false;
+    let description = '';
+    let descriptionValid = false;
     let imageUrl =  '';
+    let imageUrlValid = false;
+    let formIsValid = false;
     
     const dispatcher = new createEventDispatcher();
+
+    $: titleValid = !isEmpty(title); //tuc la false :)
+    $: subtitleValid = !isEmpty(subtitle);
+    $: addressValid = !isEmpty(address);
+    $: emailValid = isValidEmail(email);
+    $: descriptionValid = !isEmpty(description);
+    $: imageUrlValid = !isEmpty(imageUrl);
+    $: formIsValid = titleValid 
+        && subtitleValid 
+        && addressValid 
+        && descriptionValid
+        && imageUrlValid
+        && emailValid;
+    
+
 
     function submitForm() {
         dispatcher('save', {
@@ -48,6 +71,8 @@ form {
             id="title" 
             label="Title"
             value="{title}"
+            valid={titleValid}
+            validityMessage="Please enter a valid title!"
             on:input={(event) => {
                 console.log(event.target.value);
                 title = event.target.value;
@@ -63,6 +88,8 @@ form {
             id="subtitle" 
             label="Subtitle"
             value="{subtitle}"
+            valid={subtitleValid}
+            validityMessage="Please enter a valid subtitle!"
             on:input={(event) => {
                 console.log(event.target.value);
                 subtitle = event.target.value;
@@ -78,6 +105,8 @@ form {
             id="address" 
             label="Address"
             value="{address}"
+            valid={addressValid}
+            validityMessage="Please enter a valid address!"
             on:input={(event) => {
                 console.log(event.target.value);
                 address = event.target.value;
@@ -93,6 +122,8 @@ form {
             id="imageUrl" 
             label="Image URL"
             value="{imageUrl}"
+            valid={imageUrlValid}
+            validityMessage="Please enter a valid image URL!"
             on:input={(event) => {
                 console.log(event.target.value);
                 imageUrl = event.target.value;
@@ -108,6 +139,8 @@ form {
             id="email" 
             label="Email"
             value="{email}"
+            valid={emailValid}
+            validityMessage="Please enter a valid email!"
             on:input={(event) => {
                 console.log(event.target.value);
                 email = event.target.value;
@@ -124,6 +157,8 @@ form {
             label="Description"
             value="{description}"
             controlType="textarea"
+            valid={descriptionValid}
+            validityMessage="Please enter a valid description!"
             on:input={(event) => {
                 console.log(event.target.value);
                 description = event.target.value;
@@ -133,7 +168,7 @@ form {
 
     <div slot="footer">
         
-        <Button type="button" on:click={submitForm}>Save</Button>
+        <Button type="button" on:click={submitForm} disabled={!formIsValid}>Save</Button>
         <Button type="button" mode="outline" on:click={cancel}>Cancel</Button>
     </div>
 </Modal>

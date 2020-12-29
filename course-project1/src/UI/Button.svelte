@@ -1,9 +1,10 @@
 <script>
     export let type = "button";
-    export let caption = "";
+    // export let caption = "";
     export let href = null;
     export let mode = null;
     export let color = null;
+    export let disabled = false;
 
 </script>
 
@@ -93,5 +94,5 @@ button:disabled:active {
       class="{mode} {color}" 
       type="{type}"
       on:click
-      ><slot /></button>
+      disabled={disabled}><slot /></button>
 {/if}
