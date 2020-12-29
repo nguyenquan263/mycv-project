@@ -1,11 +1,15 @@
 <script>
-
+    import meetups from './meetup-store';
     import {createEventDispatcher} from 'svelte';
 
     import TextInput from '../UI/TextInput.svelte';
     import Button from '../UI/Button.svelte';
     import Modal from '../UI/Modal.svelte';
     import {isEmpty, isValidEmail} from '../helpers/validation';
+    import MeetupDetail from './MeetupDetail.svelte';
+
+    export let id = null;
+    
 
     let title = '';
     let titleValid = false;
@@ -20,6 +24,21 @@
     let imageUrl =  '';
     let imageUrlValid = false;
     let formIsValid = false;
+
+    if (id) {
+        const unsubscribe = meetups.subscribe(items => {
+            const selectedMeetup = items.find(i => i.id === id);
+            title = selectedMeetup.title;
+            subtitle = selectedMeetup.subtitle;
+            address =selectedMeetup.address;
+            email = selectedMeetup.email;
+            description = selectedMeetup.description;
+            imageUrl = selectedMeetup.imageUrl;
+        });
+
+        unsubscribe();
+
+    }
     
     const dispatcher = new createEventDispatcher();
 
@@ -39,14 +58,27 @@
 
 
     function submitForm() {
-        dispatcher('save', {
-            title: title,
-            subtitle: subtitle,
-            address: address,
-            email: email,
-            description: description,
-            imageUrl: imageUrl
-        });
+
+        const meetupData = {
+			title: title,
+			subtitle: subtitle,
+			description: description,
+			imageUrl: imageUrl,
+			contactEmail: email,
+			address: address
+		};
+
+        if (id) {
+            meetups.updateMeetup(id, meetupData);
+        } else {
+            meetups.addMeetup(meetupData);
+        }
+        dispatcher('save');
+    }
+
+    function deleteMeetup() {
+        meetups.removeMeetup(id);
+        dispatcher("cancel");
     }
 
     function cancel() {
@@ -169,6 +201,9 @@ form {
     <div slot="footer">
         
         <Button type="button" on:click={submitForm} disabled={!formIsValid}>Save</Button>
+        {#if id}
+            <Button type="button" on:click={deleteMeetup}>Delete</Button>
+        {/if}
         <Button type="button" mode="outline" on:click={cancel}>Cancel</Button>
     </div>
 </Modal>
