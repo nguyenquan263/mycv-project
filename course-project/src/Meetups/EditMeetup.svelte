@@ -31,7 +31,7 @@
             title = selectedMeetup.title;
             subtitle = selectedMeetup.subtitle;
             address =selectedMeetup.address;
-            email = selectedMeetup.email;
+            email = selectedMeetup.contactEmail;
             description = selectedMeetup.description;
             imageUrl = selectedMeetup.imageUrl;
         });
@@ -69,15 +69,60 @@
 		};
 
         if (id) {
-            meetups.updateMeetup(id, meetupData);
+
+            fetch(`https://sveltejs-course-default-rtdb.firebaseio.com/meetups/${id}.json`, {
+                method: 'PATCH',
+                body: JSON.stringify(meetupData),
+                headers: {'Content-Type': 'application/json'},
+            }).then(res => {
+                if (res.ok == false) {
+                    throw new Error('An error occurred!');
+                }
+                meetups.updateMeetup(id, meetupData);
+            }).catch(err => {
+                console.log(err);
+            });
+
+            
         } else {
-            meetups.addMeetup(meetupData);
+
+            fetch('https://sveltejs-course-default-rtdb.firebaseio.com/meetups.json', {
+                method: 'POST',
+                body: JSON.stringify({...meetupData, isFavorite: false}),
+                headers: {'Content-Type': 'application/json'}
+            }).then(res => {
+                if (res.ok == false) {
+                    throw new Error('An error occurred!');
+                }
+
+                return res.json()
+            }).then(data => {
+                console.log(data);
+
+                meetups.addMeetup({
+                    ...meetupData,
+                    isFavorite: false,
+                    id: data.name
+                })
+            }).catch(err => {
+                console.log(err);
+            });
         }
         dispatcher('save');
     }
 
     function deleteMeetup() {
-        meetups.removeMeetup(id);
+        fetch(`https://sveltejs-course-default-rtdb.firebaseio.com/meetups/${id}.json`, {
+            method: 'DELETE',
+        }).then( res => {
+            if (res.ok == false) {
+                throw new Error('An error occurred!');
+            }
+            meetups.removeMeetup(id);
+        }).catch( err => {
+            console.log(err);
+        });
+        
         dispatcher("cancel");
     }
 
